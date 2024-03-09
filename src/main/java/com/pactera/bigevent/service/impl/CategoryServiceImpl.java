@@ -1,17 +1,17 @@
 package com.pactera.bigevent.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.pactera.bigevent.gen.Category;
+import com.pactera.bigevent.gen.entity.Category;
 import com.pactera.bigevent.mapper.CategoryMapper;
 import com.pactera.bigevent.service.CategoryService;
-import com.pactera.bigevent.utils.ThreadLocalUtil;
+import com.pactera.bigevent.utils.ThreadLocalUserUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -29,28 +29,31 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public Integer saveCategory(Category category) {
-
-        Map<String, Object> map = ThreadLocalUtil.get();
-        Integer id = (Integer) map.get("id");
-        category.setCreateUser(id);
+        Long userId = ThreadLocalUserUtil.getUserId();
+        category.setCreateUser(userId);
         category.setCreateTime(LocalDateTime.now());
-        category.setUpdateTime(LocalDateTime.now());
         return categoryMapper.insert(category);
     }
 
     @Override
     public List<Category> getList() {
-
-        Map<String, Object> map = ThreadLocalUtil.get();
-        Integer id = (Integer) map.get("id");
-        return categoryMapper.selectList(new QueryWrapper<Category>().lambda().eq(Category::getCreateUser, id));
+        Long userId = ThreadLocalUserUtil.getUserId();
+        return categoryMapper.selectList(new QueryWrapper<Category>().lambda().eq(Category::getCreateUser, userId));
     }
 
     @Override
     public Integer updateCategory(Category category) {
-
-        category.setUpdateTime(LocalDateTime.now());
-        return categoryMapper.updateById(category);
+        LambdaQueryWrapper<Category> queryWrapper = new QueryWrapper<Category>()
+                .lambda()
+                .eq(Category::getId, category.getId())
+                .eq(Category::getIsDeleted, 0);
+        Category oldCategory = categoryMapper.selectOne(queryWrapper);
+        Long userId = ThreadLocalUserUtil.getUserId();
+        oldCategory.setCategoryName(category.getCategoryName());
+        oldCategory.setCategoryAlias(category.getCategoryAlias());
+        oldCategory.setUpdateTime(LocalDateTime.now());
+        oldCategory.setUpdateUser(userId);
+        return categoryMapper.updateById(oldCategory);
     }
 
 }

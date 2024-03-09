@@ -1,7 +1,7 @@
 package com.pactera.bigevent.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.pactera.bigevent.gen.Category;
+import com.pactera.bigevent.gen.entity.Category;
 
 import java.util.List;
 

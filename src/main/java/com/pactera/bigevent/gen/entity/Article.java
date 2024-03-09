@@ -1,20 +1,20 @@
-package com.pactera.bigevent.gen;
+package com.pactera.bigevent.gen.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pactera.bigevent.anno.ArticleState;
+import com.pactera.bigevent.common.entity.base.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.URL;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -25,11 +25,12 @@ import java.time.LocalDateTime;
  * @since 2024年02月29日
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
 @TableName("article")
-public class Article implements Serializable {
+public class Article extends BaseEntity<Article> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -38,7 +39,7 @@ public class Article implements Serializable {
      * ID
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 文章标题
@@ -73,25 +74,6 @@ public class Article implements Serializable {
      */
     @TableField("category_id")
     @NotNull
-    private Integer categoryId;
+    private Long categoryId;
 
-    /**
-     * 创建人ID
-     */
-    @TableField("create_user")
-    private Integer createUser;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    /**
-     * 修改时间
-     */
-    @TableField("update_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
 }

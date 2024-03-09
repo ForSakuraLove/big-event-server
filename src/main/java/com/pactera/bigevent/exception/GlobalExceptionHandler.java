@@ -1,6 +1,6 @@
 package com.pactera.bigevent.exception;
 
-import com.pactera.bigevent.gen.Result;
+import com.pactera.bigevent.gen.entity.Result;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;

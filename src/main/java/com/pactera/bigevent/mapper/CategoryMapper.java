@@ -1,7 +1,7 @@
 package com.pactera.bigevent.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pactera.bigevent.gen.Category;
+import com.pactera.bigevent.gen.entity.Category;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

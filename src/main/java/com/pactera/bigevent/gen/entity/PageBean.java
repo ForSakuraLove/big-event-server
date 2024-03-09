@@ -1,4 +1,4 @@
-package com.pactera.bigevent.gen;
+package com.pactera.bigevent.gen.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

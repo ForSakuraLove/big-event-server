@@ -1,7 +1,7 @@
 package com.pactera.bigevent.controller;
 
-import com.pactera.bigevent.gen.Category;
-import com.pactera.bigevent.gen.Result;
+import com.pactera.bigevent.gen.entity.Category;
+import com.pactera.bigevent.gen.entity.Result;
 import com.pactera.bigevent.service.CategoryService;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
