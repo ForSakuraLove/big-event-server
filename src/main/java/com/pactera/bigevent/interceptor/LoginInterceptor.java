@@ -1,7 +1,6 @@
 package com.pactera.bigevent.interceptor;
 
 import com.pactera.bigevent.common.entity.CurrentUserContext;
-import com.pactera.bigevent.gen.entity.User;
 import com.pactera.bigevent.service.UserService;
 import com.pactera.bigevent.utils.JwtUtil;
 import com.pactera.bigevent.utils.ThreadLocalUserUtil;
@@ -14,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
 
-import static com.pactera.bigevent.gen.entity.RedisDefinition.LOGIN_USER_KEY_PREFIX;
+import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
 
 @Component
 public class LoginInterceptor implements HandlerInterceptor {

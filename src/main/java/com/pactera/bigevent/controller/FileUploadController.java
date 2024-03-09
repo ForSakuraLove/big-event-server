@@ -1,6 +1,6 @@
 package com.pactera.bigevent.controller;
 
-import com.pactera.bigevent.gen.entity.Result;
+import com.pactera.bigevent.common.entity.base.Result;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -3,6 +3,7 @@ package com.pactera.bigevent.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pactera.bigevent.exception.SystemException;
 import com.pactera.bigevent.gen.entity.Category;
 import com.pactera.bigevent.mapper.CategoryMapper;
 import com.pactera.bigevent.service.CategoryService;
@@ -48,6 +49,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 .eq(Category::getId, category.getId())
                 .eq(Category::getIsDeleted, 0);
         Category oldCategory = categoryMapper.selectOne(queryWrapper);
+        if (oldCategory == null) {
+            throw new SystemException("该分类为空");
+        }
         Long userId = ThreadLocalUserUtil.getUserId();
         oldCategory.setCategoryName(category.getCategoryName());
         oldCategory.setCategoryAlias(category.getCategoryAlias());

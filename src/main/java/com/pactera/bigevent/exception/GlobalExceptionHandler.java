@@ -1,6 +1,6 @@
 package com.pactera.bigevent.exception;
 
-import com.pactera.bigevent.gen.entity.Result;
+import com.pactera.bigevent.common.entity.base.Result;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -14,6 +14,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public Result handleException(Exception e) {
+        return Result.error(StringUtils.hasLength(e.getMessage()) ? e.getMessage() : "系统异常错误");
+    }
+
+    @ExceptionHandler(value = SystemException.class)
+    public Result handleException(SystemException e) {
         return Result.error(StringUtils.hasLength(e.getMessage()) ? e.getMessage() : "系统异常错误");
     }
 

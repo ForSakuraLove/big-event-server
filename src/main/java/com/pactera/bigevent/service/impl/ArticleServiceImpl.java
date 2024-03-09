@@ -1,10 +1,13 @@
 package com.pactera.bigevent.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.pactera.bigevent.exception.SystemException;
 import com.pactera.bigevent.gen.entity.Article;
-import com.pactera.bigevent.gen.entity.PageBean;
+import com.pactera.bigevent.common.entity.PageBean;
 import com.pactera.bigevent.mapper.ArticleMapper;
 import com.pactera.bigevent.service.ArticleService;
 import com.pactera.bigevent.utils.ThreadLocalUserUtil;
@@ -51,8 +54,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Integer updateArticle(Article article) {
         Long userId = ThreadLocalUserUtil.getUserId();
-        article.setUpdateTime(LocalDateTime.now());
-        article.setUpdateUser(userId);
-        return articleMapper.updateById(article);
+        LambdaQueryWrapper<Article> queryWrapper = new QueryWrapper<Article>()
+                .lambda()
+                .eq(Article::getId, article.getId())
+                .eq(Article::getIsDeleted, 0);
+        Article oldArticle = articleMapper.selectOne(queryWrapper);
+        if (oldArticle == null) {
+            throw new SystemException("该文章为空");
+        }
+        oldArticle.setTitle(article.getTitle());
+        oldArticle.setContent(article.getContent());
+        oldArticle.setCategoryId(article.getCategoryId());
+        oldArticle.setState(article.getState());
+        oldArticle.setCoverImg(article.getCoverImg());
+        oldArticle.setUpdateTime(LocalDateTime.now());
+        oldArticle.setUpdateUser(userId);
+        return articleMapper.updateById(oldArticle);
     }
 }

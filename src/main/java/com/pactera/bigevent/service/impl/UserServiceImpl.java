@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pactera.bigevent.common.entity.CurrentUserContext;
+import com.pactera.bigevent.exception.SystemException;
 import com.pactera.bigevent.gen.entity.User;
 import com.pactera.bigevent.mapper.UserMapper;
 import com.pactera.bigevent.service.UserService;
@@ -49,16 +50,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Integer updateByUser(User user) {
-        Long userId = ThreadLocalUserUtil.getUserId();
-        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
-        updateWrapper
+        LambdaQueryWrapper<User> queryWrapper = new QueryWrapper<User>()
                 .lambda()
-                .set(User::getNickname, user.getNickname())
-                .set(User::getEmail, user.getEmail())
-                .set(User::getUpdateTime, LocalDateTime.now())
-                .set(User::getUpdateUser, userId)
-                .eq(User::getId, user.getId());
-        return userMapper.update(updateWrapper);
+                .eq(User::getId, user.getId())
+                .eq(User::getIsDeleted, 0);
+        User oldUser = userMapper.selectOne(queryWrapper);
+        if (oldUser == null) {
+            throw new SystemException("用户为空");
+        }
+        Long userId = ThreadLocalUserUtil.getUserId();
+        oldUser.setNickname(user.getNickname());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setUpdateUser(userId);
+        oldUser.setUpdateTime(LocalDateTime.now());
+        return userMapper.updateById(oldUser);
     }
 
     @Override
