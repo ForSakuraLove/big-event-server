@@ -1,7 +1,7 @@
 package com.pactera.bigevent.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pactera.bigevent.gen.Article;
+import com.pactera.bigevent.gen.entity.Article;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,5 +18,5 @@ import java.util.List;
 @Mapper
 public interface ArticleMapper extends BaseMapper<Article> {
 
-    List<Article> getList(@Param("userId") Integer userId, @Param("categoryId") String categoryId, @Param("state") String state);
+    List<Article> getList(@Param("userId") Long userId, @Param("categoryId") String categoryId, @Param("state") String state);
 }

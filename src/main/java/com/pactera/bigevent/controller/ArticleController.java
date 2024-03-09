@@ -1,8 +1,8 @@
 package com.pactera.bigevent.controller;
 
-import com.pactera.bigevent.gen.Article;
-import com.pactera.bigevent.gen.PageBean;
-import com.pactera.bigevent.gen.Result;
+import com.pactera.bigevent.gen.entity.Article;
+import com.pactera.bigevent.gen.entity.PageBean;
+import com.pactera.bigevent.gen.entity.Result;
 import com.pactera.bigevent.service.ArticleService;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -52,7 +52,7 @@ public class ArticleController {
     @PutMapping
     public Result update(@RequestBody @Validated Article article) {
         Integer update = articleService.updateArticle(article);
-        if (update != 1){
+        if (update != 1) {
             return Result.error("更新失败");
         }
         return Result.success();

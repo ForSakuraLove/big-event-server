@@ -3,7 +3,7 @@
 <mapper namespace="com.pactera.bigevent.mapper.CategoryMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.pactera.bigevent.gen.Category">
+    <resultMap id="BaseResultMap" type="com.pactera.bigevent.gen.entity.Category">
         <id column="id" property="id" />
         <result column="category_name" property="categoryName" />
         <result column="category_alias" property="categoryAlias" />

@@ -15,3 +15,18 @@ mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+security:
+  jwt:
+    prefix: Bearer
+    expire: 864000000
+    secret: zwkPactera
+logging:
+  level:
+    com.pactera.bigevent.mapper: debug
+    com.pactera.bigevent.aspect: debug
+    com.pactera.bigevent.mapper.UserMapper: debug
+    com.pactera.bigevent.mapper.UserMapper.InitUserContext: info

@@ -3,7 +3,7 @@
 <mapper namespace="com.pactera.bigevent.mapper.ArticleMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.pactera.bigevent.gen.Article">
+    <resultMap id="BaseResultMap" type="com.pactera.bigevent.gen.entity.Article">
         <id column="id" property="id"/>
         <result column="title" property="title"/>
         <result column="content" property="content"/>
@@ -20,7 +20,7 @@
         id
         , title, content, cover_img, state, category_id, create_user, create_time, update_time
     </sql>
-    <select id="getList" resultType="com.pactera.bigevent.gen.Article">
+    <select id="getList" resultType="com.pactera.bigevent.gen.entity.Article">
         select *
         from article
         <where>
