@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author zwk
@@ -20,4 +20,6 @@ public interface CategoryService extends IService<Category> {
     List<Category> getList();
 
     Integer updateCategory(Category category);
+
+    Integer logicDelete(Integer id);
 }

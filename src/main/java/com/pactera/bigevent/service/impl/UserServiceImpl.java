@@ -34,7 +34,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User findByUsername(String username) {
         LambdaQueryWrapper<User> queryWrapper = new QueryWrapper<User>()
                 .lambda()
-                .eq(User::getUsername, username);
+                .eq(User::getUsername, username)
+                .eq(User::getIsDeleted, 0);
         return userMapper.selectOne(queryWrapper);
     }
 

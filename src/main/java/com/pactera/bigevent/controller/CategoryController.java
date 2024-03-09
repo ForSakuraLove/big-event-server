@@ -36,7 +36,6 @@ public class CategoryController {
 
     @GetMapping
     public Result<List<Category>> getList() {
-
         List<Category> list = categoryService.getList();
         return Result.success(list);
     }
@@ -63,8 +62,8 @@ public class CategoryController {
 
     @DeleteMapping
     public Result delete(@RequestParam Integer id) {
-        boolean delete = categoryService.removeById(id);
-        if (!delete) {
+        Integer delete = categoryService.logicDelete(id);
+        if (delete != 1) {
             return Result.error("删除失败");
         }
         return Result.success();
