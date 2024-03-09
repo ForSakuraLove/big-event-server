@@ -42,7 +42,7 @@ public class UserController {
     private StringRedisTemplate stringRedisTemplate;
 
     @PostMapping("register")
-    public Result register(@Pattern(regexp = "^[a-zA-Z]{6,16}$") String username, @Pattern(regexp = "^\\w{6,16}$") String password) {
+    public Result register(@Pattern(regexp = "^[a-zA-Z]{5,16}$") String username, @Pattern(regexp = "^\\w{6,16}$") String password) {
         log.info("Register");
         User user = userService.findByUsername(username);
         if (user != null) {
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Result login(@Pattern(regexp = "^[a-zA-Z]{6,16}$") String username, @Pattern(regexp = "^\\w{6,16}$") String password) {
+    public Result login(@Pattern(regexp = "^[a-zA-Z]{5,16}$") String username, @Pattern(regexp = "^\\w{6,16}$") String password) {
 
         User user = userService.findByUsername(username);
         if (user == null) {
