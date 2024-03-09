@@ -1,0 +1,32 @@
+package com.pactera.bigevent.exception;
+
+import com.pactera.bigevent.common.entity.constants.CommonMessage;
+import com.pactera.bigevent.common.entity.constants.ResponseCode;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.NoSuchMessageException;
+
+@Slf4j
+public class SystemException extends RuntimeException {
+    @Getter
+    private String code;
+    private final String message;
+
+    public SystemException(String message) {
+        this.code = ResponseCode.INTERNAL_SERVER_ERROR;
+        this.message = message;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    @Override
+    public String getMessage() {
+        try {
+            return this.message;
+        } catch (NoSuchMessageException var2) {
+            return CommonMessage.INTERNAL_SERVER_ERROR;
+        }
+    }
+}

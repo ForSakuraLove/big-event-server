@@ -1,8 +1,8 @@
 package com.pactera.bigevent.controller;
 
 import com.pactera.bigevent.gen.entity.Article;
-import com.pactera.bigevent.gen.entity.PageBean;
-import com.pactera.bigevent.gen.entity.Result;
+import com.pactera.bigevent.common.entity.PageBean;
+import com.pactera.bigevent.common.entity.base.Result;
 import com.pactera.bigevent.service.ArticleService;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;

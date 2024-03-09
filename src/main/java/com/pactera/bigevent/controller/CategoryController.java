@@ -1,7 +1,7 @@
 package com.pactera.bigevent.controller;
 
 import com.pactera.bigevent.gen.entity.Category;
-import com.pactera.bigevent.gen.entity.Result;
+import com.pactera.bigevent.common.entity.base.Result;
 import com.pactera.bigevent.service.CategoryService;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +36,6 @@ public class CategoryController {
 
     @GetMapping
     public Result<List<Category>> getList() {
-
         List<Category> list = categoryService.getList();
         return Result.success(list);
     }
@@ -63,8 +62,8 @@ public class CategoryController {
 
     @DeleteMapping
     public Result delete(@RequestParam Integer id) {
-        boolean delete = categoryService.removeById(id);
-        if (!delete) {
+        Integer delete = categoryService.logicDelete(id);
+        if (delete != 1) {
             return Result.error("删除失败");
         }
         return Result.success();

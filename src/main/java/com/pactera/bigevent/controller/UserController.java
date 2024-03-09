@@ -1,6 +1,6 @@
 package com.pactera.bigevent.controller;
 
-import com.pactera.bigevent.gen.entity.Result;
+import com.pactera.bigevent.common.entity.base.Result;
 import com.pactera.bigevent.gen.entity.User;
 import com.pactera.bigevent.service.UserService;
 import com.pactera.bigevent.utils.JwtUtil;
@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.pactera.bigevent.gen.entity.RedisDefinition.LOGIN_USER_KEY_PREFIX;
-import static com.pactera.bigevent.gen.entity.RedisDefinition.LOGIN_USER_KEY_TIME;
+import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
+import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_TIME;
 
 /**
  * <p>

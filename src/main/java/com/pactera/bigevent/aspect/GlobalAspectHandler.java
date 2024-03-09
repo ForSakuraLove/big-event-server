@@ -1,6 +1,6 @@
 package com.pactera.bigevent.aspect;
 
-import com.pactera.bigevent.gen.entity.Result;
+import com.pactera.bigevent.common.entity.base.Result;
 import com.pactera.bigevent.utils.JwtUtil;
 import com.pactera.bigevent.utils.ThreadLocalUserUtil;
 import jakarta.annotation.Resource;
@@ -47,7 +47,7 @@ public class GlobalAspectHandler {
         String exceptionName = exception.getClass().getName();
         String message = exception.getMessage();
         log.warn(exceptionName + " : " + message);
-        log.warn(exception.getCause().getMessage());
+        log.warn(exception.getCause() == null ? "" : exception.getCause().getMessage());
     }
 
     @AfterReturning(value = "pointLogin()", returning = "result")

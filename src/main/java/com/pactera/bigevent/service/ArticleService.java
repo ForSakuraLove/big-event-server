@@ -2,7 +2,7 @@ package com.pactera.bigevent.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pactera.bigevent.gen.entity.Article;
-import com.pactera.bigevent.gen.entity.PageBean;
+import com.pactera.bigevent.common.entity.PageBean;
 
 /**
  * <p>
