@@ -46,15 +46,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     public List<Category> getList() {
         Long userId = ThreadLocalUserUtil.getUserId();
-        return categoryMapper.selectList(new QueryWrapper<Category>().lambda().eq(Category::getCreateUser, userId).eq(Category::getIsDeleted, 0));
+        return categoryMapper.selectList(new QueryWrapper<Category>().lambda().eq(Category::getCreateUser, userId));
     }
 
     @Override
     public Integer updateCategory(Category category) {
         LambdaQueryWrapper<Category> queryWrapper = new QueryWrapper<Category>()
                 .lambda()
-                .eq(Category::getId, category.getId())
-                .eq(Category::getIsDeleted, 0);
+                .eq(Category::getId, category.getId());
         Category oldCategory = categoryMapper.selectOne(queryWrapper);
         if (oldCategory == null) {
             throw new SystemException("该分类为空");

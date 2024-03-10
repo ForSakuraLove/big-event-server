@@ -34,8 +34,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User findByUsername(String username) {
         LambdaQueryWrapper<User> queryWrapper = new QueryWrapper<User>()
                 .lambda()
-                .eq(User::getUsername, username)
-                .eq(User::getIsDeleted, 0);
+                .eq(User::getUsername, username);
         return userMapper.selectOne(queryWrapper);
     }
 
@@ -53,8 +52,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Integer updateByUser(User user) {
         LambdaQueryWrapper<User> queryWrapper = new QueryWrapper<User>()
                 .lambda()
-                .eq(User::getId, user.getId())
-                .eq(User::getIsDeleted, 0);
+                .eq(User::getId, user.getId());
         User oldUser = userMapper.selectOne(queryWrapper);
         if (oldUser == null) {
             throw new SystemException("用户为空");

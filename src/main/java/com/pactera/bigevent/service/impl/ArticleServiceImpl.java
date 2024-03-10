@@ -56,8 +56,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Long userId = ThreadLocalUserUtil.getUserId();
         LambdaQueryWrapper<Article> queryWrapper = new QueryWrapper<Article>()
                 .lambda()
-                .eq(Article::getId, article.getId())
-                .eq(Article::getIsDeleted, 0);
+                .eq(Article::getId, article.getId());
         Article oldArticle = articleMapper.selectOne(queryWrapper);
         if (oldArticle == null) {
             throw new SystemException("该文章为空");
