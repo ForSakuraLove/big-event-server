@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
@@ -57,10 +55,10 @@ public class SecurityHandler {
         handlerOnAuthenticationSuccess(request, response, (LoginUser) authentication.getPrincipal());
     }
 
-    public void handlerOnAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, LoginUser user) throws IOException {
+    public void handlerOnAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, LoginUser user) {
         Long userId = user.getUser().getUserId();
         HashMap<String, Object> map = new HashMap<>();
-        map.put("username", user.getUser().getUsername());
+        map.put(USER_NAME, user.getUser().getUsername());
         map.put("roleNames", user.getUser().getRoleNames());
         String token = jwtUtil.genToken(map);
         stringRedisTemplate.opsForValue().set(LOGIN_USER_KEY_PREFIX + userId, token, LOGIN_USER_KEY_TIME, TimeUnit.HOURS);
@@ -72,7 +70,7 @@ public class SecurityHandler {
      * 登录失败处理
      */
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
-        System.out.println("onAuthenticationFailure---");
+        WebUtil.renderString(response, Result.error(402, exception.getMessage()).asJsonString());
     }
 
     /**
