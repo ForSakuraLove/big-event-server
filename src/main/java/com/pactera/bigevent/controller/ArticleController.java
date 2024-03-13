@@ -29,7 +29,7 @@ public class ArticleController {
         if (save != 1) {
             return Result.error("添加失败");
         }
-        return Result.success();
+        return Result.success("添加成功");
     }
 
     @GetMapping
@@ -37,7 +37,7 @@ public class ArticleController {
                                           @RequestParam(required = false) String categoryId,
                                           @RequestParam(required = false) String state) {
         PageBean<Article> pageBean = articleService.getList(pageNum, pageSize, categoryId, state);
-        return Result.success(pageBean);
+        return Result.success("获取文章成功", pageBean);
     }
 
     @DeleteMapping
@@ -46,7 +46,7 @@ public class ArticleController {
         if (!delete) {
             return Result.error("删除失败");
         }
-        return Result.success();
+        return Result.success("删除成功");
     }
 
     @PutMapping
@@ -55,6 +55,6 @@ public class ArticleController {
         if (update != 1) {
             return Result.error("更新失败");
         }
-        return Result.success();
+        return Result.success("更新成功");
     }
 }

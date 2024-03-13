@@ -31,13 +31,13 @@ public class CategoryController {
         if (save != 1) {
             return Result.error("添加失败");
         }
-        return Result.success();
+        return Result.success("添加成功");
     }
 
     @GetMapping
     public Result<List<Category>> getList() {
         List<Category> list = categoryService.getList();
-        return Result.success(list);
+        return Result.success("获取分类成功", list);
     }
 
     @GetMapping("/detail")
@@ -47,7 +47,7 @@ public class CategoryController {
         if (category == null) {
             return Result.error("文章不存在");
         }
-        return Result.success(category);
+        return Result.success("获取文章成功", category);
     }
 
     @PutMapping
@@ -57,7 +57,7 @@ public class CategoryController {
         if (update != 1) {
             return Result.error("更新失败");
         }
-        return Result.success();
+        return Result.success("更新成功");
     }
 
     @DeleteMapping
@@ -66,6 +66,6 @@ public class CategoryController {
         if (delete != 1) {
             return Result.error("删除失败");
         }
-        return Result.success();
+        return Result.success("删除成功");
     }
 }
