@@ -55,7 +55,7 @@ public class UserController {
         if (isInsert != 1) {
             return Result.error("系统错误");
         }
-        return Result.success();
+        return Result.success("注册成功");
     }
 
     @PostMapping("/login")
@@ -79,7 +79,7 @@ public class UserController {
     public Result userInfo() {
         String username = ThreadLocalUserUtil.getUsername();
         User user = userService.findByUsername(username);
-        return Result.success(user);
+        return Result.success("获取用户信息成功", user);
     }
 
     @PutMapping("/update")
@@ -92,7 +92,7 @@ public class UserController {
         if (update != 1) {
             return Result.error("更新失败");
         }
-        return Result.success(user);
+        return Result.success("更新用户成功", user);
     }
 
     @PatchMapping("/updateAvatar")
@@ -101,7 +101,7 @@ public class UserController {
         if (update != 1) {
             return Result.error("更新失败");
         }
-        return Result.success();
+        return Result.success("更新头像成功");
     }
 
     @PatchMapping("/updatePwd")
@@ -129,6 +129,6 @@ public class UserController {
             return Result.error("系统错误");
         }
         stringRedisTemplate.opsForValue().getOperations().delete(LOGIN_USER_KEY_PREFIX + user.getId());
-        return Result.success();
+        return Result.success("更新密码成功");
     }
 }
