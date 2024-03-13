@@ -1,7 +1,7 @@
 package com.pactera.bigevent.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.pactera.bigevent.common.entity.CurrentUserContext;
+import com.pactera.bigevent.gen.dto.UserWithRolesDto;
 import com.pactera.bigevent.gen.entity.User;
 
 /**
@@ -22,5 +22,5 @@ public interface UserService extends IService<User> {
 
     Integer updateAvatar(String avatarUrl);
 
-    CurrentUserContext initUserContext(String username);
+    UserWithRolesDto getLoginUser(String username);
 }

@@ -18,13 +18,19 @@
     <sql id="Base_Column_List">
         id, username, password, nickname, email, user_pic, create_time, update_time
     </sql>
-    <select id="InitUserContext" resultType="com.pactera.bigevent.common.entity.CurrentUserContext">
-        select id       as userId,
-               username as username,
-               0        as roleId
-        from user
-        where username = #{username}
-          and is_deleted = 0;
+
+    <select id="getLoginUser" resultType="com.pactera.bigevent.gen.dto.UserWithRolesDto">
+        select u.id                      as userId,
+               u.username                as username,
+               u.password                as password,
+               u.status                  as status,
+               GROUP_CONCAT(r.role_name) as roleNames
+        from user u
+                 left join user_role_mapping urm
+                           on u.id = urm.user_id
+                 left join role r
+                           on urm.role_id = r.id
+        where username = #{username};
     </select>
 
 </mapper>

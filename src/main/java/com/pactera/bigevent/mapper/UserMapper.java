@@ -1,7 +1,7 @@
 package com.pactera.bigevent.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pactera.bigevent.common.entity.CurrentUserContext;
+import com.pactera.bigevent.gen.dto.UserWithRolesDto;
 import com.pactera.bigevent.gen.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,6 +17,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
-    CurrentUserContext InitUserContext(@Param("username") String username);
+    UserWithRolesDto getLoginUser(@Param("username") String username);
 
 }
