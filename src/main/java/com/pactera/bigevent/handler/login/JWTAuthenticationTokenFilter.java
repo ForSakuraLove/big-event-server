@@ -36,7 +36,8 @@ public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {String token = request.getHeader("token");
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String token = request.getHeader("Authorization");
         if (token == null) {
             filterChain.doFilter(request, response);
             return;

@@ -36,6 +36,10 @@ public class Result<T> {
         return new Result(500, message);
     }
 
+    public static Result error(Integer code, String message) {
+        return new Result(code, message);
+    }
+
     public String asJsonString() {
         return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);
     }

@@ -14,12 +14,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
-import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_TIME;
 
 /**
  * <p>
@@ -56,23 +53,6 @@ public class UserController {
             return Result.error("系统错误");
         }
         return Result.success("注册成功");
-    }
-
-    @PostMapping("/login")
-    public Result login(@Pattern(regexp = "^[a-zA-Z]{5,16}$") String username, @Pattern(regexp = "^\\w{6,16}$") String password) {
-        User user = userService.findByUsername(username);
-        if (user == null) {
-            return Result.error("用户名不存在");
-        }
-        if (!Md5Util.getMD5String(password).equals(user.getPassword())) {
-            return Result.error("密码不正确");
-        }
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("username", username);
-        map.put("roleId", 0L);
-        String token = jwtUtil.genToken(map);
-        stringRedisTemplate.opsForValue().set(LOGIN_USER_KEY_PREFIX + user.getId(), token, LOGIN_USER_KEY_TIME, TimeUnit.HOURS);
-        return Result.success(token);
     }
 
     @RequestMapping("/userInfo")
