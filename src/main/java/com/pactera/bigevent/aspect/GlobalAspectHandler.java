@@ -63,4 +63,15 @@ public class GlobalAspectHandler {
         log.debug(className + "/" + methodName);
     }
 
+//    @Pointcut("execution(public * com.pactera.bigevent..*.*(..))")
+//    private void pointAllMethods() {
+//    }
+
+//    @Before(value = "pointAllMethods()")
+//    public void logAllMethod(JoinPoint joinPoint) {
+//        String methodName = joinPoint.getSignature().getName();
+//        String className = joinPoint.getTarget().getClass().getName();
+//        log.debug(className + "/" + methodName);
+//    }
+
 }

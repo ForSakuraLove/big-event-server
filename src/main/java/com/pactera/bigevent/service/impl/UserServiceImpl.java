@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.pactera.bigevent.common.entity.CurrentUserContext;
 import com.pactera.bigevent.exception.SystemException;
+import com.pactera.bigevent.gen.dto.UserWithRolesDto;
 import com.pactera.bigevent.gen.entity.User;
 import com.pactera.bigevent.mapper.UserMapper;
 import com.pactera.bigevent.service.UserService;
@@ -79,7 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public CurrentUserContext initUserContext(String username) {
-        return userMapper.InitUserContext(username);
+    public UserWithRolesDto getLoginUser(String username) {
+        return userMapper.getLoginUser(username);
     }
 }

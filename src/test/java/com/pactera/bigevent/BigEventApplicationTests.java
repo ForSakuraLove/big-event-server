@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -28,6 +29,21 @@ class BigEventApplicationTests {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Test
+    public void testPasswordEncoder(){
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        boolean matches = bCryptPasswordEncoder
+                .matches("123456", "$2a$10$/l4hHQ8IqlqG2wzkVJuGN.cMAB6RkeNd6IM3aiSpUE70SJXiUFPCO");
+        System.out.println(matches);
+//        $2a$10$/l4hHQ8IqlqG2wzkVJuGN.cMAB6RkeNd6IM3aiSpUE70SJXiUFPCO
+//        $2a$10$dchGSj7235JBPmsRyp3daOK.85YC1rzS7aKCzmIogc2QSm6xg7XVK
+//        String encode = bCryptPasswordEncoder.encode("123456");
+//        String encode1 = bCryptPasswordEncoder.encode("123456");
+//        System.out.println(encode1);
+//        System.out.println(encode);
+
+    }
 
     @Test
     void contextLoads() {

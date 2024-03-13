@@ -1,6 +1,7 @@
 package com.pactera.bigevent.interceptor;
 
 import com.pactera.bigevent.common.entity.CurrentUserContext;
+import com.pactera.bigevent.gen.dto.UserWithRolesDto;
 import com.pactera.bigevent.service.UserService;
 import com.pactera.bigevent.utils.JwtUtil;
 import com.pactera.bigevent.utils.ThreadLocalUserUtil;
@@ -11,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
@@ -37,11 +39,11 @@ public class LoginInterceptor implements HandlerInterceptor {
                 throw new RuntimeException();
             }
             String username = String.valueOf(map.get("username"));
-            CurrentUserContext currentUser = userService.initUserContext(username);
-            if (currentUser == null || currentUser.getUserId() == null) {
+            UserWithRolesDto loginUser = userService.getLoginUser(username);
+            if (loginUser == null || loginUser.getUserId() == null) {
                 throw new RuntimeException();
             }
-            Long userId = currentUser.getUserId();
+            Long userId = loginUser.getUserId();
             String redisToken = stringRedisTemplate.opsForValue().get(LOGIN_USER_KEY_PREFIX + userId);
             if (redisToken == null) {
                 throw new RuntimeException();
@@ -49,6 +51,10 @@ public class LoginInterceptor implements HandlerInterceptor {
             if (!token.equals(redisToken)) {
                 throw new RuntimeException();
             }
+            CurrentUserContext currentUser = new CurrentUserContext();
+            currentUser.setUserId(userId);
+            currentUser.setUsername(username);
+            currentUser.setRoleNames(List.of(loginUser.getRoleNames().split(",")));
             ThreadLocalUserUtil.setCurrentUserContext(currentUser);
             return true;
         } catch (Exception e) {

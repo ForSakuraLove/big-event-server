@@ -2,6 +2,8 @@ package com.pactera.bigevent.utils;
 
 import com.pactera.bigevent.common.entity.CurrentUserContext;
 
+import java.util.List;
+
 /**
  * ThreadLocal 工具类
  */
@@ -24,9 +26,9 @@ public class ThreadLocalUserUtil {
         return currentUser != null ? currentUser.getUserId() : null;
     }
 
-    public static Long getRoleId() {
+    public static List<String> getRoleNames() {
         CurrentUserContext currentUser = getCurrentUserContext();
-        return currentUser != null ? currentUser.getRoleId() : null;
+        return currentUser != null ? currentUser.getRoleNames() : null;
     }
 
     public static String getUsername() {

@@ -1,6 +1,7 @@
 package com.pactera.bigevent.common.entity.base;
 
-
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ public class Result<T> {
     private String message;//提示信息
     private T data;//响应数据
 
-    public Result(Integer code, String message){
+    public Result(Integer code, String message) {
         this.code = code;
         this.message = message;
     }
@@ -29,7 +30,16 @@ public class Result<T> {
         return new Result(200, "操作成功");
     }
 
+    public static <E> Result<E> success(String msg, E data) {
+        return new Result<>(200, msg, data);
+    }
+
     public static Result error(String message) {
         return new Result(500, message);
     }
+
+    public String asJsonString() {
+        return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);
+    }
+
 }
