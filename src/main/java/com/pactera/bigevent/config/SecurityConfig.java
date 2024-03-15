@@ -85,7 +85,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(authentication -> authentication
-                        .requestMatchers("/user/login", "/user/register","/monthlyVisitors")//不拦截login访问的路径
+                        .requestMatchers("/user/login", "/user/register","/monthlyVisitors","/user/logout")//不拦截login访问的路径
                         .permitAll()//所有人都可以访问
                         .anyRequest()
                         .authenticated())
