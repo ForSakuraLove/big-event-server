@@ -6,7 +6,7 @@ package com.pactera.bigevent.common.entity.constants;
  * 创建时间：2023/10/12 16:01
  * 公共常量
  */
-public class Const {
+public class HeaderConst {
     /**
      * 跨域过滤器的优先级
      */

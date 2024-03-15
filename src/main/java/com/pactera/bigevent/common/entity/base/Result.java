@@ -2,6 +2,7 @@ package com.pactera.bigevent.common.entity.base;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import com.pactera.bigevent.common.entity.constants.ResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,15 +26,15 @@ public class Result<T> {
 
     //快速返回操作成功响应结果
     public static Result success(String message) {
-        return new Result(200, message);
+        return new Result(ResponseCode.SUCCESS, message);
     }
 
     public static <E> Result<E> success(String msg, E data) {
-        return new Result<>(200, msg, data);
+        return new Result<>(ResponseCode.SUCCESS, msg, data);
     }
 
     public static Result error(String message) {
-        return new Result(500, message);
+        return new Result(ResponseCode.INTERNAL_SERVER_ERROR, message);
     }
 
     public static Result error(Integer code, String message) {

@@ -9,7 +9,7 @@ import org.springframework.context.NoSuchMessageException;
 @Slf4j
 public class SystemException extends RuntimeException {
     @Getter
-    private String code;
+    private Integer code;
     private final String message;
 
     public SystemException(String message) {
@@ -17,7 +17,7 @@ public class SystemException extends RuntimeException {
         this.message = message;
     }
 
-    public void setCode(String code) {
+    public void setCode(Integer code) {
         this.code = code;
     }
 

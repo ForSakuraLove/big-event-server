@@ -68,9 +68,9 @@ public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
         currentUser.setUsername(username);
         currentUser.setRoleNames(List.of(loginUser.getRoleNames().split(",")));
         ThreadLocalUserUtil.setCurrentUserContext(currentUser);
-
+        LoginUser user = new LoginUser(loginUser);
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(new LoginUser(loginUser), null, null);
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
     }
