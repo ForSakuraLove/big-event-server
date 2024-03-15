@@ -1,6 +1,7 @@
 package com.pactera.bigevent.controller;
 
 import com.pactera.bigevent.common.entity.base.Result;
+import com.pactera.bigevent.common.entity.constants.ErrorMessageConst;
 import com.pactera.bigevent.gen.entity.User;
 import com.pactera.bigevent.service.UserService;
 import com.pactera.bigevent.utils.Md5Util;
@@ -43,11 +44,11 @@ public class UserController {
         log.debug("register start ---");
         User user = userService.findByUsername(username);
         if (user != null) {
-            return Result.error("用户名已存在");
+            return Result.error(ErrorMessageConst.USERNAME_ALREADY_EXISTS);
         }
         Integer isInsert = userService.register(username, password);
         if (isInsert != 1) {
-            return Result.error("系统错误");
+            return Result.error(ErrorMessageConst.INTERNAL_SERVER_ERROR);
         }
         return Result.success("注册成功");
     }
@@ -63,11 +64,11 @@ public class UserController {
     public Result update(@RequestBody @Validated User user) {
         Long id = ThreadLocalUserUtil.getUserId();
         if (!Objects.equals(id, user.getId())) {
-            return Result.error("更新失败");
+            return Result.error(ErrorMessageConst.UPDATE_FAILED);
         }
         Integer update = userService.updateByUser(user);
         if (update != 1) {
-            return Result.error("更新失败");
+            return Result.error(ErrorMessageConst.UPDATE_FAILED);
         }
         return Result.success("更新用户成功", user);
     }
@@ -76,7 +77,7 @@ public class UserController {
     public Result updateAvatar(@RequestParam @URL String avatarUrl) {
         Integer update = userService.updateAvatar(avatarUrl);
         if (update != 1) {
-            return Result.error("更新失败");
+            return Result.error(ErrorMessageConst.UPDATE_FAILED);
         }
         return Result.success("更新头像成功");
     }
@@ -87,25 +88,30 @@ public class UserController {
         String newPwd = params.get("new_pwd");
         String rePwd = params.get("re_pwd");
         if (oldPwd == null || newPwd == null || rePwd == null || oldPwd.isEmpty() || newPwd.isEmpty() || rePwd.isEmpty()) {
-            return Result.error("参数不能为空");
+            return Result.error(ErrorMessageConst.PARAMETER_CANNOT_BE_EMPTY);
         }
         if (!newPwd.equals(rePwd)) {
-            return Result.error("两次密码不一致");
+            return Result.error(ErrorMessageConst.TWO_PASSWORDS_ARE_INCONSISTENT);
         }
         if (oldPwd.equals(newPwd)) {
-            return Result.error("新密码和旧密码不能一致");
+            return Result.error(ErrorMessageConst.THE_OLD_AND_NEW_PASSWORDS_CANNOT_BE_CONSISTENT);
         }
         String username = ThreadLocalUserUtil.getUsername();
         User user = userService.findByUsername(username);
         if (!Md5Util.getMD5String(oldPwd).equals(user.getPassword())) {
-            return Result.error("原密码不正确");
+            return Result.error(ErrorMessageConst.THE_ORIGINAL_PASSWORD_IS_INCORRECT);
         }
         user.setPassword(Md5Util.getMD5String(newPwd));
         boolean update = userService.updateById(user);
         if (!update) {
-            return Result.error("系统错误");
+            return Result.error(ErrorMessageConst.INTERNAL_SERVER_ERROR);
         }
         stringRedisTemplate.opsForValue().getOperations().delete(LOGIN_USER_KEY_PREFIX + user.getId());
         return Result.success("更新密码成功");
+    }
+
+    @GetMapping("/systemManage/getAllUsers")
+    public Result getAllUsers() {
+        return Result.success("获取用户列表成功", userService.list());
     }
 }

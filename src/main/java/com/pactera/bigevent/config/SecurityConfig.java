@@ -1,7 +1,7 @@
 package com.pactera.bigevent.config;
 
+import com.pactera.bigevent.common.entity.constants.ErrorMessageConst;
 import com.pactera.bigevent.handler.SecurityHandler;
-import com.pactera.bigevent.handler.login.AuthenticationEntryPointImpl;
 import com.pactera.bigevent.handler.login.JWTAuthenticationTokenFilter;
 import com.pactera.bigevent.utils.Md5Util;
 import jakarta.annotation.Resource;
@@ -11,12 +11,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Collection;
 import java.util.Objects;
 
 @Configuration
@@ -64,13 +67,14 @@ public class SecurityConfig {
                 String password = authentication.getCredentials().toString();
                 UserDetails loginUser = userDetailsService.loadUserByUsername(username);
                 if (Objects.isNull(loginUser) || !passwordEncoder().matches(password, loginUser.getPassword())) {
-                    log.error(username + "账号或者密码错误");
-                    throw new BadCredentialsException("账号或者密码错误");
+                    log.error(username + ErrorMessageConst.INCORRECT_ACCOUNT_OR_PASSWORD);
+                    throw new BadCredentialsException(ErrorMessageConst.INCORRECT_ACCOUNT_OR_PASSWORD);
                 }
                 if (loginUser.getAuthorities() == null) {
-                    log.error(username + "没有任何权限");
-                    throw new BadCredentialsException("没有任何权限");
+                    log.error(username + ErrorMessageConst.WITHOUT_ANY_PERMISSIONS);
+                    throw new BadCredentialsException(ErrorMessageConst.WITHOUT_ANY_PERMISSIONS);
                 }
+                log.info(username + "登录认证成功");
                 return new UsernamePasswordAuthenticationToken(loginUser, password, loginUser.getAuthorities());
             }
 
@@ -85,26 +89,38 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(authentication -> authentication
-                        .requestMatchers("/user/login", "/user/register","/monthlyVisitors","/user/logout")//不拦截login访问的路径
+                        .requestMatchers("/user/login", "/user/register",
+                                "/monthlyVisitors", "/user/logout")
                         .permitAll()//所有人都可以访问
+                        .requestMatchers("/user/systemManage/**")
+//                        .hasRole("ADMIN")
+                        .access((systemManage, object) -> {
+                            Collection<? extends GrantedAuthority> authorities = systemManage.get().getAuthorities();
+                            for (GrantedAuthority authority : authorities) {
+                                if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                                    return new AuthorizationDecision(true);
+                                }
+                            }
+                            return new AuthorizationDecision(false);
+                        })
                         .anyRequest()
                         .authenticated())
+
                 .formLogin(formLogin -> formLogin
-                        .loginProcessingUrl("/user/login")//处理前端的请求，与form表单的action一致
+                        .loginProcessingUrl("/user/login")
                         .successHandler(securityHandler::onAuthenticationSuccess)
                         .failureHandler(securityHandler::onAuthenticationFailure))
                 .logout(conf -> conf
-                        // 登出页面
                         .logoutUrl("/user/logout")
-                        // 退出登录处理
                         .logoutSuccessHandler(securityHandler::onLogoutSuccess)
                 )
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception -> {
-                    exception.authenticationEntryPoint(new AuthenticationEntryPointImpl());//请求未认证的接口
-                });
+                .exceptionHandling(conf -> conf
+                        .authenticationEntryPoint(securityHandler::onUnAuthenticated)//请求未认证的接口
+                        .accessDeniedHandler(securityHandler::onAccessDeny)
+                );
         return httpSecurity.build();
     }
 }

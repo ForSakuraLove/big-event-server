@@ -1,5 +1,6 @@
 package com.pactera.bigevent.controller;
 
+import com.pactera.bigevent.common.entity.constants.ErrorMessageConst;
 import com.pactera.bigevent.gen.entity.Article;
 import com.pactera.bigevent.common.entity.PageBean;
 import com.pactera.bigevent.common.entity.base.Result;
@@ -27,7 +28,7 @@ public class ArticleController {
     public Result add(@RequestBody @Validated Article article) {
         Integer save = articleService.saveArticle(article);
         if (save != 1) {
-            return Result.error("添加失败");
+            return Result.error(ErrorMessageConst.ADD_FAILED);
         }
         return Result.success("添加成功");
     }
@@ -44,7 +45,7 @@ public class ArticleController {
     public Result delete(@RequestParam Integer id) {
         boolean delete = articleService.removeById(id);
         if (!delete) {
-            return Result.error("删除失败");
+            return Result.error(ErrorMessageConst.DELETE_FAILED);
         }
         return Result.success("删除成功");
     }
@@ -53,7 +54,7 @@ public class ArticleController {
     public Result update(@RequestBody @Validated Article article) {
         Integer update = articleService.updateArticle(article);
         if (update != 1) {
-            return Result.error("更新失败");
+            return Result.error(ErrorMessageConst.UPDATE_FAILED);
         }
         return Result.success("更新成功");
     }

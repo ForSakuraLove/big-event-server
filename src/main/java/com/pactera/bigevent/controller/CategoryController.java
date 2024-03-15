@@ -1,5 +1,6 @@
 package com.pactera.bigevent.controller;
 
+import com.pactera.bigevent.common.entity.constants.ErrorMessageConst;
 import com.pactera.bigevent.gen.entity.Category;
 import com.pactera.bigevent.common.entity.base.Result;
 import com.pactera.bigevent.service.CategoryService;
@@ -29,7 +30,7 @@ public class CategoryController {
 
         Integer save = categoryService.saveCategory(category);
         if (save != 1) {
-            return Result.error("添加失败");
+            return Result.error(ErrorMessageConst.ADD_FAILED);
         }
         return Result.success("添加成功");
     }
@@ -45,7 +46,7 @@ public class CategoryController {
 
         Category category = categoryService.getById(id);
         if (category == null) {
-            return Result.error("文章不存在");
+            return Result.error(ErrorMessageConst.ARTICLE_NOT_EXISTED);
         }
         return Result.success("获取文章成功", category);
     }
@@ -55,7 +56,7 @@ public class CategoryController {
 
         Integer update = categoryService.updateCategory(category);
         if (update != 1) {
-            return Result.error("更新失败");
+            return Result.error(ErrorMessageConst.UPDATE_FAILED);
         }
         return Result.success("更新成功");
     }
@@ -64,7 +65,7 @@ public class CategoryController {
     public Result delete(@RequestParam Integer id) {
         Integer delete = categoryService.logicDelete(id);
         if (delete != 1) {
-            return Result.error("删除失败");
+            return Result.error(ErrorMessageConst.DELETE_FAILED);
         }
         return Result.success("删除成功");
     }
