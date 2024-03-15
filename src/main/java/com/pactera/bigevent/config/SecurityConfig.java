@@ -67,6 +67,10 @@ public class SecurityConfig {
                     log.error(username + "账号或者密码错误");
                     throw new BadCredentialsException("账号或者密码错误");
                 }
+                if (loginUser.getAuthorities() == null) {
+                    log.error(username + "没有任何权限");
+                    throw new BadCredentialsException("没有任何权限");
+                }
                 return new UsernamePasswordAuthenticationToken(loginUser, password, loginUser.getAuthorities());
             }
 
@@ -81,7 +85,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(authentication -> authentication
-                        .requestMatchers("/user/login")//不拦截login访问的路径
+                        .requestMatchers("/user/login", "/user/register","/monthlyVisitors")//不拦截login访问的路径
                         .permitAll()//所有人都可以访问
                         .anyRequest()
                         .authenticated())
@@ -89,11 +93,16 @@ public class SecurityConfig {
                         .loginProcessingUrl("/user/login")//处理前端的请求，与form表单的action一致
                         .successHandler(securityHandler::onAuthenticationSuccess)
                         .failureHandler(securityHandler::onAuthenticationFailure))
+                .logout(conf -> conf
+                        // 登出页面
+                        .logoutUrl("/user/logout")
+                        // 退出登录处理
+                        .logoutSuccessHandler(securityHandler::onLogoutSuccess)
+                )
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)//跨域拦截
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception  -> {
+                .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint(new AuthenticationEntryPointImpl());//请求未认证的接口
                 });
         return httpSecurity.build();

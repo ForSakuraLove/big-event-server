@@ -2,6 +2,7 @@ package com.pactera.bigevent.handler;
 
 import com.pactera.bigevent.common.entity.base.Result;
 import com.pactera.bigevent.gen.dto.LoginUser;
+import com.pactera.bigevent.gen.dto.UserWithRolesDto;
 import com.pactera.bigevent.service.UserService;
 import com.pactera.bigevent.utils.JwtUtil;
 import com.pactera.bigevent.utils.WebUtil;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
@@ -81,7 +83,17 @@ public class SecurityHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        System.out.println("onLogoutSuccess---");
+        String token = request.getHeader("Authorization");
+        Map<String, Object> map = jwtUtil.parseToken(token);
+        String username = String.valueOf(map.get("username"));
+        UserWithRolesDto loginUser = userService.getLoginUser(username);
+        if (loginUser == null) {
+            WebUtil.renderString(response, Result.success("退出登录成功").asJsonString());
+            return;
+        }
+        Long userId = loginUser.getUserId();
+        stringRedisTemplate.opsForValue().getOperations().delete(LOGIN_USER_KEY_PREFIX + userId);
+        WebUtil.renderString(response, Result.success("退出登录成功").asJsonString());
     }
 
     /**

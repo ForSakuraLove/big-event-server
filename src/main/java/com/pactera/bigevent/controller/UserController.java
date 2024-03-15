@@ -3,7 +3,6 @@ package com.pactera.bigevent.controller;
 import com.pactera.bigevent.common.entity.base.Result;
 import com.pactera.bigevent.gen.entity.User;
 import com.pactera.bigevent.service.UserService;
-import com.pactera.bigevent.utils.JwtUtil;
 import com.pactera.bigevent.utils.Md5Util;
 import com.pactera.bigevent.utils.ThreadLocalUserUtil;
 import jakarta.annotation.Resource;
@@ -15,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
 
@@ -37,9 +37,6 @@ public class UserController {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
-
-    @Resource
-    private JwtUtil jwtUtil;
 
     @PostMapping("register")
     public Result register(@Pattern(regexp = "^[a-zA-Z]{5,16}$") String username, @Pattern(regexp = "^\\w{6,16}$") String password) {
@@ -65,7 +62,7 @@ public class UserController {
     @PutMapping("/update")
     public Result update(@RequestBody @Validated User user) {
         Long id = ThreadLocalUserUtil.getUserId();
-        if (!id.equals(user.getId())) {
+        if (!Objects.equals(id, user.getId())) {
             return Result.error("更新失败");
         }
         Integer update = userService.updateByUser(user);
