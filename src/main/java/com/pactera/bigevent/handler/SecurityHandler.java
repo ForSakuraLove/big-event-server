@@ -85,6 +85,9 @@ public class SecurityHandler {
     ) {
         String token = request.getHeader("Authorization");
         Map<String, Object> map = jwtUtil.parseToken(token);
+        if(token == null){
+            WebUtil.renderString(response, Result.success("退出登录成功").asJsonString());
+        }
         String username = String.valueOf(map.get("username"));
         UserWithRolesDto loginUser = userService.getLoginUser(username);
         if (loginUser == null) {
