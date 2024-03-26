@@ -7,14 +7,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pactera.bigevent.exception.SystemException;
 import com.pactera.bigevent.gen.dto.UserWithRolesDto;
 import com.pactera.bigevent.gen.entity.User;
+import com.pactera.bigevent.gen.entity.UserRoleMapping;
 import com.pactera.bigevent.mapper.UserMapper;
+import com.pactera.bigevent.mapper.UserRoleMappingMapper;
 import com.pactera.bigevent.service.UserService;
 import com.pactera.bigevent.utils.Md5Util;
 import com.pactera.bigevent.utils.ThreadLocalUserUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * <p>
@@ -25,10 +30,14 @@ import java.time.LocalDateTime;
  * @since 2024年02月29日
  */
 @Service
+@Transactional
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private UserRoleMappingMapper userRoleMappingMapper;
 
     @Override
     public User findByUsername(String username) {
@@ -45,7 +54,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setUsername(username);
         user.setPassword(md5Password);
         user.setCreateTime(LocalDateTime.now());
-        return userMapper.insert(user);
+        UserRoleMapping userRoleMapping = new UserRoleMapping();
+        int insert = userMapper.insert(user);
+        User user0 = userMapper.selectOne(new QueryWrapper<User>().lambda()
+                .eq(User::getUsername, username));
+        userRoleMapping.setUserId(user0.getId());
+        userRoleMapping.setRoleId(1L);
+        userRoleMappingMapper.insert(userRoleMapping);
+        return insert;
     }
 
     @Override
@@ -82,4 +98,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UserWithRolesDto getLoginUser(String username) {
         return userMapper.getLoginUser(username);
     }
+
+    @Override
+    public String generateUniqueUsername() {
+        String userName = UUID.randomUUID().toString();
+        List<User> userList = userMapper.selectList(null);
+        while (!isUsernameUnique(userName, userList)) {
+            userName = UUID.randomUUID().toString();
+        }
+        return userName.replace("-", "");
+    }
+
+    /**
+     * 判断本次username是否唯一
+     *
+     * @param userName
+     * @param userList
+     * @return
+     */
+    private boolean isUsernameUnique(String userName, List<User> userList) {
+        for (User user : userList) {
+            if (user.getUsername().equals(userName)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

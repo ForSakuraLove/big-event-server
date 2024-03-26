@@ -9,8 +9,25 @@ spring:
       host: localhost
       port: 16379
       password: root
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: 3a1b5ef46a39d753ed51
+            client-secret: e0f1575557a62367a24549063d1e884acb88be76
+            redirect-uri: http://localhost:1234/login/oauth2/code/github
+            scope: read:user
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: login
 server:
   port: 1234
+  tomcat:
+    uri-encoding: utf-8
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
   configuration:
