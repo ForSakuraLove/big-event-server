@@ -39,7 +39,7 @@ public class OauthUserServiceImpl extends ServiceImpl<OauthUserMapper, OauthUser
     private UserRoleMappingMapper userRoleMappingMapper;
 
     @Override
-    public void loginByPlatformAndAccountId(String platformName, String thirdAccountId, String name) {
+    public void loginByPlatformAndAccountId(String platformName, String thirdAccountId, String name, String avatarUrl) {
         QueryWrapper<OauthUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(OauthUser::getPlatformName, platformName).eq(OauthUser::getThirdAccountId, thirdAccountId);
         OauthUser oauthUser = oauthUserMapper.selectOne(queryWrapper);
@@ -50,6 +50,7 @@ public class OauthUserServiceImpl extends ServiceImpl<OauthUserMapper, OauthUser
         String username = userService.generateUniqueUsername();
         user.setUsername(username);
         user.setNickname(name);
+        user.setUserPic(avatarUrl);
         String md5String = Md5Util.getMD5String(name + username.substring(1, 11));
         user.setPassword(md5String);
         user.setCreateUser(0L);

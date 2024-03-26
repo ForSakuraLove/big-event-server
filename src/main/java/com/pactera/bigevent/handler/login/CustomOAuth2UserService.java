@@ -24,7 +24,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String name = oAuth2User.getName();
         String thirdAccountId = attributes.get("id").toString();
-        oauthUserService.loginByPlatformAndAccountId(GITHUB, thirdAccountId, name);
+        String avatarUrl = attributes.get("avatar_url").toString();
+        oauthUserService.loginByPlatformAndAccountId(GITHUB, thirdAccountId, name, avatarUrl);
         return oAuth2User;
     }
 
