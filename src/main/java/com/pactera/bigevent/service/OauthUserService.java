@@ -14,7 +14,7 @@ import com.pactera.bigevent.gen.entity.OauthUser;
  */
 public interface OauthUserService extends IService<OauthUser> {
 
-    void loginByPlatformAndAccountId(String platformName, String thirdAccountId, String name);
+    void loginByPlatformAndAccountId(String platformName, String thirdAccountId, String name, String avatarUrl);
 
     UserWithRolesDto getLoginUser(String platform, String id);
 

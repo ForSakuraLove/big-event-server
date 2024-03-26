@@ -117,7 +117,7 @@ public class SecurityHandler {
         }
         Long userId = loginUser.getUserId();
         stringRedisTemplate.opsForValue().getOperations().delete(LOGIN_USER_KEY_PREFIX + userId);
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(TOKEN, null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         WebUtil.renderString(response, Result.success(LOGOUT_SUCCESS).asJsonString());
