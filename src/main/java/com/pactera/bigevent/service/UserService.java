@@ -23,4 +23,6 @@ public interface UserService extends IService<User> {
     Integer updateAvatar(String avatarUrl);
 
     UserWithRolesDto getLoginUser(String username);
+
+    String generateUniqueUsername();
 }

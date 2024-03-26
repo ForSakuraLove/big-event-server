@@ -62,4 +62,8 @@ public class HeaderConst {
      */
     public static final String FRONTEND_THIRD_LOGIN_TOKEN = "Access-Token";
 
+    public static final String AUTHORIZATION = "Authorization";
+
+    public static final String TOKEN = "token";
+
 }

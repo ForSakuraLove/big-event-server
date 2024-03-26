@@ -2,6 +2,7 @@ package com.pactera.bigevent.config;
 
 import com.pactera.bigevent.common.entity.constants.ErrorMessageConst;
 import com.pactera.bigevent.handler.SecurityHandler;
+import com.pactera.bigevent.handler.login.CustomOAuth2UserService;
 import com.pactera.bigevent.handler.login.JWTAuthenticationTokenFilter;
 import com.pactera.bigevent.utils.Md5Util;
 import jakarta.annotation.Resource;
@@ -29,6 +30,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.Collection;
 import java.util.Objects;
 
+import static com.pactera.bigevent.common.entity.constants.Role.*;
+import static com.pactera.bigevent.common.entity.constants.Url.*;
+
 @Configuration
 @EnableWebSecurity
 @Slf4j
@@ -42,6 +46,9 @@ public class SecurityConfig {
 
     @Resource
     private UserDetailsService userDetailsService;
+
+    @Resource
+    private CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -89,15 +96,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(authentication -> authentication
-                        .requestMatchers("/user/login", "/user/register",
-                                "/monthlyVisitors", "/user/logout")
+                        .requestMatchers(URL_LOGIN, URL_REGISTER,
+                                URL_MONTHLY_VISITORS, URL_LOGOUT)
                         .permitAll()//所有人都可以访问
-                        .requestMatchers("/user/systemManage/**")
+                        .requestMatchers(URL_SYSTEM_MANAGE_ALL)
 //                        .hasRole("ADMIN")
                         .access((systemManage, object) -> {
                             Collection<? extends GrantedAuthority> authorities = systemManage.get().getAuthorities();
                             for (GrantedAuthority authority : authorities) {
-                                if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                                if (authority.getAuthority().equals(ROLE_ADMIN)) {
                                     return new AuthorizationDecision(true);
                                 }
                             }
@@ -105,13 +112,12 @@ public class SecurityConfig {
                         })
                         .anyRequest()
                         .authenticated())
-
                 .formLogin(formLogin -> formLogin
-                        .loginProcessingUrl("/user/login")
+                        .loginProcessingUrl(URL_LOGIN)
                         .successHandler(securityHandler::onAuthenticationSuccess)
                         .failureHandler(securityHandler::onAuthenticationFailure))
                 .logout(conf -> conf
-                        .logoutUrl("/user/logout")
+                        .logoutUrl(URL_LOGOUT)
                         .logoutSuccessHandler(securityHandler::onLogoutSuccess)
                 )
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
@@ -119,8 +125,13 @@ public class SecurityConfig {
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(conf -> conf
                         .authenticationEntryPoint(securityHandler::onUnAuthenticated)//请求未认证的接口
-                        .accessDeniedHandler(securityHandler::onAccessDeny)
-                );
+                        .accessDeniedHandler(securityHandler::onAccessDeny)//请求未授权的接口
+                )
+                .oauth2Login(conf -> conf
+                        .loginPage(URL_GITHUB_LOGIN)
+                        .userInfoEndpoint(config -> config
+                                .userService(customOAuth2UserService))
+                        .successHandler(securityHandler::githubAuthenticationSuccess));
         return httpSecurity.build();
     }
 }

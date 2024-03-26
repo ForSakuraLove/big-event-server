@@ -12,4 +12,8 @@ public class CommonMessage {
 
 	public static final String METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"; // 参数不足
 
+	public static final String LOGOUT_SUCCESS = "退出登录成功";
+
+	public static final String LOGIN_SUCCESS = "登录成功";
+
 }

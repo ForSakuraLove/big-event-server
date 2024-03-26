@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
+import static com.pactera.bigevent.common.entity.constants.CommonConst.*;
+import static com.pactera.bigevent.common.entity.constants.HeaderConst.*;
+import static com.pactera.bigevent.common.entity.constants.RedisDefinition.*;
 
 @Component
 public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -37,7 +39,7 @@ public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader(AUTHORIZATION);
         if (token == null) {
             filterChain.doFilter(request, response);
             return;
@@ -47,7 +49,7 @@ public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String username = String.valueOf(map.get("username"));
+        String username = String.valueOf(map.get(USER_NAME));
         UserWithRolesDto loginUser = userService.getLoginUser(username);
         if (loginUser == null || loginUser.getUserId() == null) {
             filterChain.doFilter(request, response);

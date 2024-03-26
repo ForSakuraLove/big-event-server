@@ -31,6 +31,7 @@ public class MonthlyVisitorsServiceImpl extends ServiceImpl<MonthlyVisitorsMappe
         if (monthlyVisitors == null) {
             monthlyVisitors = new MonthlyVisitors();
             monthlyVisitors.setMonthDate(firstDay);
+            monthlyVisitors.setCreateUser(0L);
             monthlyVisitorsMapper.insert(monthlyVisitors);
             return;
         }

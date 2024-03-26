@@ -6,16 +6,19 @@ import com.pactera.bigevent.common.entity.constants.ResponseCode;
 import com.pactera.bigevent.exception.SystemException;
 import com.pactera.bigevent.gen.dto.LoginUser;
 import com.pactera.bigevent.gen.dto.UserWithRolesDto;
+import com.pactera.bigevent.service.OauthUserService;
 import com.pactera.bigevent.service.UserService;
 import com.pactera.bigevent.utils.JwtUtil;
 import com.pactera.bigevent.utils.WebUtil;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,8 +26,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_PREFIX;
-import static com.pactera.bigevent.common.entity.constants.RedisDefinition.LOGIN_USER_KEY_TIME;
+import static com.pactera.bigevent.common.entity.constants.CommonConst.*;
+import static com.pactera.bigevent.common.entity.constants.CommonMessage.*;
+import static com.pactera.bigevent.common.entity.constants.HeaderConst.*;
+import static com.pactera.bigevent.common.entity.constants.PlatformName.*;
+import static com.pactera.bigevent.common.entity.constants.RedisDefinition.*;
+import static com.pactera.bigevent.common.entity.constants.Url.*;
 
 /**
  * @author <p>
@@ -42,7 +49,8 @@ public class SecurityHandler {
     @Resource
     private UserService userService;
 
-    public static final String USER_NAME = "username";
+    @Resource
+    private OauthUserService oauthUserService;
 
 
     /**
@@ -56,14 +64,32 @@ public class SecurityHandler {
         handlerOnAuthenticationSuccess(request, response, (LoginUser) authentication.getPrincipal());
     }
 
+    /**
+     * github授权成功处理
+     *
+     * @param request        请求
+     * @param response       响应
+     * @param authentication 认证信息
+     */
+    public void githubAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        Map<String, Object> attributes = ((OAuth2AuthenticationToken) authentication).getPrincipal().getAttributes();
+        String id = attributes.get("id").toString();
+        UserWithRolesDto user = oauthUserService.getLoginUser(GITHUB, id);
+        Long userId = user.getUserId();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(USER_NAME, user.getUsername());
+        map.put(ROLE_NAMES, user.getRoleNames());
+        loginOfCookie(request, response, userId, map);
+        response.sendRedirect(HOME);
+    }
+
     public void handlerOnAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, LoginUser user) {
         Long userId = user.getUser().getUserId();
         HashMap<String, Object> map = new HashMap<>();
         map.put(USER_NAME, user.getUser().getUsername());
-        map.put("roleNames", user.getUser().getRoleNames());
-        String token = jwtUtil.genToken(map);
-        stringRedisTemplate.opsForValue().set(LOGIN_USER_KEY_PREFIX + userId, token, LOGIN_USER_KEY_TIME, TimeUnit.HOURS);
-        WebUtil.renderString(response, Result.success("登录成功", token).asJsonString());
+        map.put(ROLE_NAMES, user.getUser().getRoleNames());
+        loginOfCookie(request, response, userId, map);
+        WebUtil.renderString(response, Result.success(LOGIN_SUCCESS).asJsonString());
     }
 
 
@@ -78,20 +104,23 @@ public class SecurityHandler {
      * 退出登录处理
      */
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader(AUTHORIZATION);
         Map<String, Object> map = jwtUtil.parseToken(token);
         if (token == null) {
-            WebUtil.renderString(response, Result.success("退出登录成功").asJsonString());
+            WebUtil.renderString(response, Result.success(LOGOUT_SUCCESS).asJsonString());
         }
-        String username = String.valueOf(map.get("username"));
+        String username = String.valueOf(map.get(USER_NAME));
         UserWithRolesDto loginUser = userService.getLoginUser(username);
         if (loginUser == null) {
-            WebUtil.renderString(response, Result.success("退出登录成功").asJsonString());
+            WebUtil.renderString(response, Result.success(LOGOUT_SUCCESS).asJsonString());
             return;
         }
         Long userId = loginUser.getUserId();
         stringRedisTemplate.opsForValue().getOperations().delete(LOGIN_USER_KEY_PREFIX + userId);
-        WebUtil.renderString(response, Result.success("退出登录成功").asJsonString());
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        WebUtil.renderString(response, Result.success(LOGOUT_SUCCESS).asJsonString());
     }
 
     /**
@@ -108,5 +137,17 @@ public class SecurityHandler {
     public void onAccessDeny(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) {
         WebUtil.renderString(response, Result.error(ResponseCode.INVALID_AUTHORIZATION,
                 ErrorMessageConst.INVALID_AUTHORIZATION).asJsonString());
+    }
+
+    private void loginOfCookie(HttpServletRequest request, HttpServletResponse response, Long userId, HashMap<String, Object> map) {
+        String token = jwtUtil.genToken(map);
+        stringRedisTemplate.opsForValue().set(LOGIN_USER_KEY_PREFIX + userId, token, LOGIN_USER_KEY_TIME, TimeUnit.HOURS);
+        Cookie cookie = new Cookie(TOKEN, token);
+//        cookie.setHttpOnly(true);
+        cookie.setSecure(true); // 仅在HTTPS连接下发送cookie
+        cookie.setPath("/"); // 设置cookie路径
+        cookie.setDomain(LOCALHOST);//设置cookie的域属性
+        cookie.setMaxAge(24 * 60 * 60);//设置过期时间
+        response.addCookie(cookie);
     }
 }
