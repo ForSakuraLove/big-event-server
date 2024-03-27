@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/big_event
+    username: root
+    password: root
+  data:
+    redis:
+      host: localhost
+      port: 16379
+      password: root
+  application:
+    name: article-server
+server:
+  port: 1236
+  tomcat:
+    uri-encoding: utf-8
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+logging:
+  level:
+    com.pactera.article.mapper: debug
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10011/eureka/
