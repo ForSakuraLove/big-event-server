@@ -24,6 +24,8 @@ spring:
             token-uri: https://github.com/login/oauth/access_token
             user-info-uri: https://api.github.com/user
             user-name-attribute: login
+  application:
+    name: big-event-server
 server:
   port: 1234
   tomcat:
@@ -47,3 +49,7 @@ logging:
     com.pactera.bigevent.aspect: debug
     com.pactera.bigevent.mapper.UserMapper: debug
     com.pactera.bigevent.mapper.UserMapper.InitUserContext: info
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10011/eureka/

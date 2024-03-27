@@ -1,4 +1,4 @@
-package com.pactera.category.config;
+package com.pactera.bigevent.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

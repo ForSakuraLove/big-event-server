@@ -6,6 +6,11 @@ spring:
     password: root
   application:
     name: eureka-server
+  data:
+    redis:
+      host: localhost
+      port: 16379
+      password: root
 server:
   port: 10011
 eureka:

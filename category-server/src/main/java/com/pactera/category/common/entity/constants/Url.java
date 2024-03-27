@@ -18,5 +18,7 @@ public class Url {
 
     public static final String LOCALHOST = "localhost";
 
+    public static final String ARTICLE_SERVER = "http://article-server/article/";
+
 
 }

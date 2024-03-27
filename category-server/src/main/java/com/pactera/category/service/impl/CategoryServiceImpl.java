@@ -16,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.pactera.category.common.entity.constants.Url.ARTICLE_SERVER;
+
 /**
  * <p>
  * 服务实现类
@@ -68,7 +70,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     public Integer logicDelete(Integer id) {
         int isDelete = categoryMapper.deleteById(id);
-        String url = "http://localhost:1236/article/" + id;
+        String url = ARTICLE_SERVER + id;
         restTemplate.delete(url);
         return isDelete;
     }
